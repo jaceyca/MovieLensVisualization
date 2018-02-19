@@ -21,7 +21,37 @@ def main():
 
     # 1. All movies
     frequencies = Counter(data[:,1]) # how often the movies are reviewed
+    r1_movies, r2_movies, r3_movies, r4_movies, r5_movies = [],[],[],[],[]
+    avg_ratings = {}
+    for data_tuple in data:
+    	key = data_tuple[1]
+    	avg_ratings[key] = avg_ratings.get(key, 0) + data_tuple[2]/frequencies[key]
+    	# Divide movies my rating
+    	if data_tuple[2] == 1: r1_movies.append(data_tuple[1])
+    	elif data_tuple[2] == 2: r2_movies.append(data_tuple[1])
+    	elif data_tuple[2] == 3: r3_movies.append(data_tuple[1])
+    	elif data_tuple[2] == 4: r4_movies.append(data_tuple[1])
+    	elif data_tuple[2] == 5: r5_movies.append(data_tuple[1])
 
+    # Plot histogram
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    width = 0.35  
+    ind = np.arange(5) # x locations for the ratings
+    rating_count = [len(r1_movies), len(r2_movies), 
+                          len(r3_movies), len(r4_movies), len(r5_movies)] # frequencies for histogram
+    rectangles = ax.bar(ind, rating_count, width, color='black')
+
+    ax.set_xlim(-width,len(ind)-width)
+    ax.set_ylim(0,max(rating_count))
+    ax.set_xlabel('Rating')
+    ax.set_ylabel('Number of Movies')
+    ax.set_title('Ratings of All Movies')
+    xTickMarks = [str(i) for i in range(1,6)]
+    ax.set_xticks(ind)
+    xtickNames = ax.set_xticklabels(xTickMarks)
+    plt.setp(xtickNames, fontsize=10)
+    plt.show()
 
     # 2. Ten most popular movies
     most_reviewed = frequencies.most_common(10)
@@ -31,16 +61,20 @@ def main():
     print("Most Reviewed Movies: ", pop_movie_names)
 
     # 3. Top ten best movies
-    avg_ratings = {}
-    for data_tuple in data:
-    	key = data_tuple[1]
-    	avg_ratings[key] = avg_ratings.get(key, 0) + data_tuple[2]/frequencies[key]
     best_reviewed = dict(Counter(avg_ratings).most_common(10))
     best_reviewed_names = [movie_names[ID] for ID in best_reviewed]
     best_reviewed_genres = [genres[ID] for ID in best_reviewed]
     print("Best Movies: ", best_reviewed_names)
 
-    # 4. Three genres of your choice
+    # 4. Three genres of your choice - 2:Action, 7:Documentary, 17:War
+    action_movies = [ID for ID in genres if genres[ID][2] == 1]
+    action_movie_names = [movie_names[ID] for ID in action_movies] 
+
+    documentary_movies = [ID for ID in genres if genres[ID][7] == 1]
+    documentary_movie_names = [movie_names[ID] for ID in documentary_movies] 
+
+    war_movies = [ID for ID in genres if genres[ID][17] == 1]
+    war_movie_names = [movie_names[ID] for ID in war_movies] 
 
 if __name__ == "__main__":
     main()
