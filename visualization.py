@@ -11,9 +11,11 @@ def main():
     # movies = np.genfromtxt('./data/movies.txt',dtype='str')
     movie_file = codecs.open('./data/movies.txt', mode='r', encoding='windows-1252')
     movie_names = {}
+    ratings = {}
     for line in movie_file:
     	movie_info = line.split()
-    	movie_names[int(movie_info[0])] = 
+    	movie_names[int(movie_info[0])] = " ".join(movie_info[1:-19])
+    	ratings[int(movie_info[0])] = list(map(int, movie_info[-19:]))
 
     M = max(data[:,0]).astype(int) # users
     N = max(data[:,1]).astype(int) # movies
