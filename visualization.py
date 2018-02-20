@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pylab as pl
 import codecs
+import operator
 from collections import Counter
 
 
@@ -35,6 +37,48 @@ def bar_plot(rating_count, title):
     plt.setp(xtickNames, fontsize=10)
     plt.savefig(title)
     plt.show()
+
+def categorize(genre_dict, movieIDs): 
+    '''
+    This function gives coordinates for each movie given the data we read in 
+    and some iterable item containing all the ID's of the desired movies
+
+    Input: 
+        genre_dict: dictionary of the lists of genre specifcations
+        movieIDs: the IDs of the movies we are considering for the tally
+
+    Output: 
+        a list of coordinates categorizing how serious(+)/escapist(-) and 
+        aldrenaline-rush(+)/light-hearted(-) the movie is
+    '''
+    
+    ###
+    # 0-Unknown, 1-Action, 2-Adventure, 3-Animation, 4-Childrens, 5-Comedy, 
+    # 6-Crime, 7-Documentary, 8-Drama, 9-Fantasy, 10-Film-Noir, 11-Horror, 
+    # 12-Musical, 13-Mystery, 14-Romance, 15-Sci-Fi, 16-Thriller, 17-War, 18-Western
+    ###
+    coordinates = []
+    for ID in movieIDs:
+        fields = genre_dict[ID]
+
+        # Serious = [Crime, Documentary, Drama, Film-noir, Mystery, War]
+        # Escapist = [Fantasy, Horror, Romance, Sci-Fi, Thriller, Western]
+        # Adrenaline-Rush = [Action, Adventure, Crime, Horror, Mystery, Thriller]
+        # Light-Hearted = [Animation, Childrens, Comedy, Documentary, Musical, Romance]
+
+        get_serious = operator.itemgetter(6,7,8,10,13,17)
+        get_escapist = operator.itemgetter(9,11,14,15,16,18)
+        get_adrenaline = operator.itemgetter(1,2,6,11,13,16)
+        get_light = operator.itemgetter(3,4,5,7,12,14)
+
+        serious_count = sum(get_serious(fields))
+        escapist_count = sum(get_escapist(fields))
+        adrenaline_count = sum(get_adrenaline(fields))
+        light_count = sum(get_light(fields))
+
+        coordinates.append((serious_count-escapist_count, adrenaline_count-light_count))
+
+    return coordinates
 
 def get_rating_count(data, movieIDs):
     '''
@@ -120,6 +164,74 @@ def main():
     pop_movie_genres = [genres[ID] for ID in pop_movie_IDs]
     print("Most Reviewed Movies: ", pop_movie_names)
 
+    # Fancy visualization
+    pop_coordinates = categorize(genres, pop_movie_IDs)
+    pop_X = [x[0] for x in pop_coordinates]
+    pop_Y = [x[1] for x in pop_coordinates]
+    
+    fig = pl.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(pop_X,pop_Y,'ko',markersize=8)
+    lim = max([max(pop_X), max(pop_Y), abs(min(pop_X)), abs(min(pop_Y))])
+
+    xmin, xmax = (-lim-0.5,lim+0.5)
+    ymin, ymax = (-lim-0.5,lim+0.5)
+    ax.set_xlim([-lim-0.5,lim+0.5])
+    ax.set_ylim([-lim-0.5,lim+0.5])
+
+    # plot movie names
+    for label, xpt, ypt in zip(pop_movie_names, pop_X, pop_Y):
+        ax.text(xpt-0.1, ypt+0.1, label)
+
+    # plot classifications
+    ax.text(-0.4, ymax+0.5, 'Serious')
+    ax.text(-0.4, ymin-0.5, 'Escapist')
+    ax.text(xmax-0.6, 0.5, 'Adrenaline-Rush')
+    ax.text(xmin-0.4, 0.5, 'Light-Hearted')
+
+    # removing the default axis on all sides:
+    for side in ['bottom','right','top','left']:
+        ax.spines[side].set_visible(False)
+ 
+    # removing the axis ticks
+    pl.xticks([]) # labels 
+    pl.yticks([])
+    ax.xaxis.set_ticks_position('none') # tick markers
+    ax.yaxis.set_ticks_position('none')
+
+    # get width and height of axes object to compute 
+    # matching arrowhead length and width
+    dps = fig.dpi_scale_trans.inverted()
+    bbox = ax.get_window_extent().transformed(dps)
+    width, height = bbox.width, bbox.height
+ 
+    # manual arrowhead width and length
+    hw = 1./20.*(ymax-ymin) 
+    hl = 1./20.*(xmax-xmin)
+    lw = 1. # axis line width
+    ohg = 0.3 # arrow overhang
+ 
+    # compute matching arrowhead length and width
+    yhw = hw/(ymax-ymin)*(xmax-xmin)* height/width 
+    yhl = hl/(xmax-xmin)*(ymax-ymin)* width/height
+ 
+    # draw x and y axis
+    ax.arrow(0, 0, xmax, 0, fc='k', ec='k', lw = lw, 
+         head_width=hw, head_length=hl, overhang = ohg, 
+         length_includes_head= True, clip_on = False) 
+    ax.arrow(0, 0, 0, ymax, fc='k', ec='k', lw = lw, 
+         head_width=yhw, head_length=yhl, overhang = ohg, 
+         length_includes_head= True, clip_on = False) 
+    ax.arrow(0, 0, xmin, 0, fc='k', ec='k', lw = lw, 
+         head_width=yhw, head_length=yhl, overhang = ohg, 
+         length_includes_head= True, clip_on = False) 
+    ax.arrow(0, 0, 0, ymin, fc='k', ec='k', lw = lw, 
+         head_width=yhw, head_length=yhl, overhang = ohg, 
+         length_includes_head= True, clip_on = False) 
+
+    pl.show()
+
+    # Histogram
     pop_rating_count = get_rating_count(data, pop_movie_IDs)
     bar_plot(pop_rating_count, 'Ratings of Ten Most Popular Movies')
 
@@ -155,6 +267,7 @@ def main():
     # plotting war movies
     war_rating_count = get_rating_count(data, war_movies)
     bar_plot(war_rating_count, 'Ratings of War Movies')
+
 
 if __name__ == "__main__":
     main()
