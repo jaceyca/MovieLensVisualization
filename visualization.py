@@ -8,6 +8,7 @@ def main():
 	# Y_train = np.loadtxt('./data/train.txt').astype(int)
  #    Y_test = np.loadtxt('./data/test.txt').astype(int)
     data = np.loadtxt('./data/data.txt').astype(int)
+    print(data[:, 2])
     movie_file = codecs.open('./data/movies.txt', mode='r', encoding='windows-1252')
     movie_names = {}
     genres = {}
@@ -34,7 +35,7 @@ def main():
     	elif data_tuple[2] == 5: r5_movies.append(data_tuple[1])
 
     # Plot histogram
-    fig = plt.figure()
+    fig = plt.figure(1)
     ax = fig.add_subplot(111)
     width = 0.35  
     ind = np.arange(5) # x locations for the ratings
@@ -51,7 +52,8 @@ def main():
     ax.set_xticks(ind)
     xtickNames = ax.set_xticklabels(xTickMarks)
     plt.setp(xtickNames, fontsize=10)
-    plt.show()
+    fig.show()
+    
 
     # 2. Ten most popular movies
     most_reviewed = frequencies.most_common(10)
@@ -59,6 +61,33 @@ def main():
     pop_movie_names = [movie_names[ID] for ID in pop_movie_IDs]
     pop_movie_genres = [genres[ID] for ID in pop_movie_IDs]
     print("Most Reviewed Movies: ", pop_movie_names)
+
+    # plot the histogram for the ratings of the most popular
+    pop_r1, pop_r2, pop_r3, pop_r4, pop_r5 = 0, 0, 0, 0, 0
+    for rating in data: 
+        if rating[1] in pop_movie_IDs: 
+            if rating[2] == 1: pop_r1 += 1
+            elif rating[2] == 2: pop_r2 += 1
+            elif rating[2] == 3: pop_r3 += 1
+            elif rating[2] == 4: pop_r4 += 1
+            elif rating[2] == 5: pop_r5 += 1
+
+    pop_fig = plt.figure(2)
+    ax_pop = pop_fig.add_subplot(111)
+    pop_rating_count = [pop_r1, pop_r2, pop_r3, pop_r4, pop_r5]
+    rectangles = ax_pop.bar(ind, pop_rating_count, width, color='black')
+
+    ax_pop.set_xlim(-width,len(ind)-width)
+    ax_pop.set_ylim(0,max(pop_rating_count))
+    ax_pop.set_xlabel('Rating')
+    ax_pop.set_ylabel('Number of Movies')
+    ax_pop.set_title('Ratings of Ten Most Popular Movies')
+    xTickMarks = [str(i) for i in range(1,6)]
+    ax_pop.set_xticks(ind)
+    xtickNames = ax_pop.set_xticklabels(xTickMarks)
+    plt.setp(xtickNames, fontsize=10)
+    plt.show()
+
 
     # 3. Top ten best movies
     best_reviewed = dict(Counter(avg_ratings).most_common(10))
