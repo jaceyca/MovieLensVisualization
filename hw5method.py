@@ -31,17 +31,18 @@ def projectUV(U, V):
     return newU, newV
 
 
-def get_rating_count(data, movieIDs):
+def get_rating_freq(data, movieIDs):
     '''
-    This function gets the rating count given the data we read in and some
-    iterable item containing all the ID's of the movies we want to tally
+    This function gets relative frequency of each rating given the data 
+    we read in and somee iterable item containing all the ID's of the 
+    movies we want to tally
 
     Input: 
         data: the rating data that we read in 
         movieIDs: the IDs of the movies we are considering for the tally
 
     Output: 
-        a list of how many ratings of each there were, from 1 to 5
+        a list of how the frequency of each rating, from 1 to 5
     '''
     r1, r2, r3, r4, r5 = 0, 0, 0, 0, 0
     for rating in data: 
@@ -51,8 +52,12 @@ def get_rating_count(data, movieIDs):
             elif rating[2] == 3: r3 += 1
             elif rating[2] == 4: r4 += 1
             elif rating[2] == 5: r5 += 1
-
-    return [r1, r2, r3, r4, r5]
+    f1 = r1/(r1+r2+r3+r4+r5)
+    f2 = r2/(r1+r2+r3+r4+r5)
+    f3 = r3/(r1+r2+r3+r4+r5)
+    f4 = r4/(r1+r2+r3+r4+r5)
+    f5 = r5/(r1+r2+r3+r4+r5)
+    return [f1, f2, f3, f4, f5]
 
 def bar_plot(rating_count, title):
     '''
@@ -128,9 +133,14 @@ def main():
     r3 = intPreds.count(3)
     r4 = intPreds.count(4)
     r5 = intPreds.count(5)
+    f1 = r1/(r1+r2+r3+r4+r5)
+    f2 = r2/(r1+r2+r3+r4+r5)
+    f3 = r3/(r1+r2+r3+r4+r5)
+    f4 = r4/(r1+r2+r3+r4+r5)
+    f5 = r5/(r1+r2+r3+r4+r5)
 
-    rating_count = [r1, r2, r3, r4, r5]
-    bar_plot(rating_count, "Ratings of All Predicted Movies")
+    rating_freq = [f1, f2, f3, f4, f5]
+    bar_plot(rating_freq, "Ratings of All Predicted Movies")
 
 if __name__ == "__main__":
     main()

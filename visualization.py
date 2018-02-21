@@ -29,7 +29,7 @@ def bar_plot(rating_count, title):
     ax.set_xlim(-width,len(ind)-width)
     ax.set_ylim(0,max(rating_count))
     ax.set_xlabel('Rating')
-    ax.set_ylabel('Number of Movies')
+    ax.set_ylabel('Frequency')
     ax.set_title(title)
     xTickMarks = [str(i) for i in range(1,6)]
     ax.set_xticks(ind)
@@ -162,17 +162,18 @@ def fancy_plot(genre_dict, movieIDs, movieNames, title):
     pl.savefig(title)
     pl.show()
 
-def get_rating_count(data, movieIDs):
+def get_rating_freq(data, movieIDs):
     '''
-    This function gets the rating count given the data we read in and some
-    iterable item containing all the ID's of the movies we want to tally
+    This function gets relative frequency of each rating given the data 
+    we read in and somee iterable item containing all the ID's of the 
+    movies we want to tally
 
     Input: 
         data: the rating data that we read in 
         movieIDs: the IDs of the movies we are considering for the tally
 
     Output: 
-        a list of how many ratings of each there were, from 1 to 5
+        a list of how the frequency of each rating, from 1 to 5
     '''
     r1, r2, r3, r4, r5 = 0, 0, 0, 0, 0
     for rating in data: 
@@ -182,8 +183,12 @@ def get_rating_count(data, movieIDs):
             elif rating[2] == 3: r3 += 1
             elif rating[2] == 4: r4 += 1
             elif rating[2] == 5: r5 += 1
-
-    return [r1, r2, r3, r4, r5]
+    f1 = r1/(r1+r2+r3+r4+r5)
+    f2 = r2/(r1+r2+r3+r4+r5)
+    f3 = r3/(r1+r2+r3+r4+r5)
+    f4 = r4/(r1+r2+r3+r4+r5)
+    f5 = r5/(r1+r2+r3+r4+r5)
+    return [f1, f2, f3, f4, f5]
 
 
 def main():
@@ -203,40 +208,12 @@ def main():
 
     # 1. All movies
     frequencies = Counter(data[:,1]) # how often the movies are reviewed
-    r1_movies, r2_movies, r3_movies, r4_movies, r5_movies = [],[],[],[],[]
     avg_ratings = {}
     for data_tuple in data:
         key = data_tuple[1]
         avg_ratings[key] = avg_ratings.get(key, 0) + data_tuple[2]/frequencies[key]
-        # Divide movies my rating
-        if data_tuple[2] == 1: r1_movies.append(data_tuple[1])
-        elif data_tuple[2] == 2: r2_movies.append(data_tuple[1])
-        elif data_tuple[2] == 3: r3_movies.append(data_tuple[1])
-        elif data_tuple[2] == 4: r4_movies.append(data_tuple[1])
-        elif data_tuple[2] == 5: r5_movies.append(data_tuple[1])
 
-    # Plot histogram
-    # fig = plt.figure(1)
-    # ax = fig.add_subplot(111)
-    # width = 0.35  
-    # ind = np.arange(5) # x locations for the ratings
-    # rating_count = [len(r1_movies), len(r2_movies), 
-    #                       len(r3_movies), len(r4_movies), len(r5_movies)] # frequencies for histogram
-    # rectangles = ax.bar(ind, rating_count, width, color='black')
-
-    # ax.set_xlim(-width,len(ind)-width)
-    # ax.set_ylim(0,max(rating_count))
-    # ax.set_xlabel('Rating')
-    # ax.set_ylabel('Number of Movies')
-    # ax.set_title('Ratings of All Movies')
-    # xTickMarks = [str(i) for i in range(1,6)]
-    # ax.set_xticks(ind)
-    # xtickNames = ax.set_xticklabels(xTickMarks)
-    # plt.setp(xtickNames, fontsize=10)
-    # fig.show()
-
-    rating_count = [len(r1_movies), len(r2_movies), 
-                          len(r3_movies), len(r4_movies), len(r5_movies)] # frequencies for histogram
+    rating_count = get_rating_freq(data, [ID for ID in movie_names]) 
     bar_plot(rating_count, 'Ratings of All Movies')
     
 
@@ -251,7 +228,7 @@ def main():
     fancy_plot(genres, pop_movie_IDs, pop_movie_names, 'Visualization of Ten Most Popular Movies')
 
     # Histogram
-    pop_rating_count = get_rating_count(data, pop_movie_IDs)
+    pop_rating_count = get_rating_freq(data, pop_movie_IDs)
     bar_plot(pop_rating_count, 'Ratings of Ten Most Popular Movies')
 
 
@@ -262,7 +239,7 @@ def main():
     print("Best Movies: ", best_reviewed_names)
 
 
-    best_rating_count = get_rating_count(data, best_reviewed)
+    best_rating_count = get_rating_freq(data, best_reviewed)
     bar_plot(best_rating_count, 'Ratings of Ten Best Movies')
 
     # 4. Three genres of your choice - 2:Action, 7:Documentary, 17:War
@@ -270,21 +247,21 @@ def main():
     action_movie_names = [movie_names[ID] for ID in action_movies] 
 
     # action movie plotting
-    action_rating_count = get_rating_count(data, action_movies)
+    action_rating_count = get_rating_freq(data, action_movies)
     bar_plot(action_rating_count, 'Ratings of Action Movies')
 
     documentary_movies = [ID for ID in genres if genres[ID][7] == 1]
     documentary_movie_names = [movie_names[ID] for ID in documentary_movies] 
 
     # plotting documentaries
-    documentary_count = get_rating_count(data, documentary_movies)
+    documentary_count = get_rating_freq(data, documentary_movies)
     bar_plot(documentary_count, 'Ratings of Documentaries')
 
     war_movies = [ID for ID in genres if genres[ID][17] == 1]
     war_movie_names = [movie_names[ID] for ID in war_movies] 
 
     # plotting war movies
-    war_rating_count = get_rating_count(data, war_movies)
+    war_rating_count = get_rating_freq(data, war_movies)
     bar_plot(war_rating_count, 'Ratings of War Movies')
 
 
