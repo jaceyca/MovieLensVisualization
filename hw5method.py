@@ -21,17 +21,68 @@ def projectUV(U, V):
         newU: The 2D version of U
         newV: The 2D version of V
     '''
-    print(np.array(V).shape)
-    print(np.array(U).shape)
+
     A, S, B = svd(V)
     A = np.array(A)
     A = A[:, [0, 1]]
-    print(A.shape)
-    # newU = np.dot(np.transpose(A), U)
+    newU = np.dot(np.transpose(A), np.transpose(U))
     newV = np.dot(np.transpose(A), V)
 
-    return newV
+    return newU, newV
 
+
+def get_rating_count(data, movieIDs):
+    '''
+    This function gets the rating count given the data we read in and some
+    iterable item containing all the ID's of the movies we want to tally
+
+    Input: 
+        data: the rating data that we read in 
+        movieIDs: the IDs of the movies we are considering for the tally
+
+    Output: 
+        a list of how many ratings of each there were, from 1 to 5
+    '''
+    r1, r2, r3, r4, r5 = 0, 0, 0, 0, 0
+    for rating in data: 
+        if rating[1] in movieIDs: 
+            if rating[2] == 1: r1 += 1
+            elif rating[2] == 2: r2 += 1
+            elif rating[2] == 3: r3 += 1
+            elif rating[2] == 4: r4 += 1
+            elif rating[2] == 5: r5 += 1
+
+    return [r1, r2, r3, r4, r5]
+
+def bar_plot(rating_count, title):
+    '''
+    This function plots the rating count given in a bar graph
+
+    Input: 
+        rating_count: a list containing the number of each rating
+        title: what the title of the plot should be
+    Output: 
+        shows the plot
+        saves the plot under the title given 
+    '''
+    fig = plt.figure(1)
+    ax = fig.add_subplot(111)
+    width = 0.35  
+    ind = np.arange(5) # x locations for the ratings
+
+    rectangles = ax.bar(ind, rating_count, width, color='black')
+
+    ax.set_xlim(-width,len(ind)-width)
+    ax.set_ylim(0,max(rating_count))
+    ax.set_xlabel('Rating')
+    ax.set_ylabel('Number of Movies')
+    ax.set_title(title)
+    xTickMarks = [str(i) for i in range(1,6)]
+    ax.set_xticks(ind)
+    xtickNames = ax.set_xticklabels(xTickMarks)
+    plt.setp(xtickNames, fontsize=10)
+    plt.savefig(title)
+    plt.show()
 
 
 def main():
@@ -42,7 +93,7 @@ def main():
     N = max(max(Y_train[:,1]), max(Y_test[:,1])).astype(int) # movies
     Ks = [20]
 
-    # this gives me the best results, but I could be wrong
+    # Ein and Eout for different regs have been recorded
     regs = [10**-1]
     eta = 0.03 # learning rate
     E_ins = []
@@ -64,11 +115,22 @@ def main():
         E_outs.append(E_outs_for_lambda)
 
 
+
     newU, newV = projectUV(U, V)
-    print("V:")
-    print(newV)
+    preds = np.dot(np.transpose(newU), newV)
+    intPreds = list(np.around(np.ndarray.flatten(preds)).astype(int))
 
+    print("Number of Points:")
+    print(len(intPreds))
 
+    r1 = intPreds.count(1)
+    r2 = intPreds.count(2)
+    r3 = intPreds.count(3)
+    r4 = intPreds.count(4)
+    r5 = intPreds.count(5)
+
+    rating_count = [r1, r2, r3, r4, r5]
+    bar_plot(rating_count, "Ratings of All Predicted Movies")
 
 if __name__ == "__main__":
     main()
