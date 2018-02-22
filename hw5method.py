@@ -5,10 +5,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from prob2utils import train_model, get_err
+from visualization import get_rating_freq, bar_plot, fancy_plot
 from numpy.linalg import svd
 
 
-    
 def projectUV(U, V):
     '''
     This function projects U and V in to a 2D space so we can create visualizations.
@@ -29,65 +29,6 @@ def projectUV(U, V):
     newV = np.dot(np.transpose(A), V)
 
     return newU, newV
-
-
-def get_rating_freq(data, movieIDs):
-    '''
-    This function gets relative frequency of each rating given the data 
-    we read in and somee iterable item containing all the ID's of the 
-    movies we want to tally
-
-    Input: 
-        data: the rating data that we read in 
-        movieIDs: the IDs of the movies we are considering for the tally
-
-    Output: 
-        a list of how the frequency of each rating, from 1 to 5
-    '''
-    r1, r2, r3, r4, r5 = 0, 0, 0, 0, 0
-    for rating in data: 
-        if rating[1] in movieIDs: 
-            if rating[2] == 1: r1 += 1
-            elif rating[2] == 2: r2 += 1
-            elif rating[2] == 3: r3 += 1
-            elif rating[2] == 4: r4 += 1
-            elif rating[2] == 5: r5 += 1
-    f1 = r1/(r1+r2+r3+r4+r5)
-    f2 = r2/(r1+r2+r3+r4+r5)
-    f3 = r3/(r1+r2+r3+r4+r5)
-    f4 = r4/(r1+r2+r3+r4+r5)
-    f5 = r5/(r1+r2+r3+r4+r5)
-    return [f1, f2, f3, f4, f5]
-
-def bar_plot(rating_count, title):
-    '''
-    This function plots the rating count given in a bar graph
-
-    Input: 
-        rating_count: a list containing the number of each rating
-        title: what the title of the plot should be
-    Output: 
-        shows the plot
-        saves the plot under the title given 
-    '''
-    fig = plt.figure(1)
-    ax = fig.add_subplot(111)
-    width = 0.35  
-    ind = np.arange(5) # x locations for the ratings
-
-    rectangles = ax.bar(ind, rating_count, width, color='black')
-
-    ax.set_xlim(-width,len(ind)-width)
-    ax.set_ylim(0,max(rating_count))
-    ax.set_xlabel('Rating')
-    ax.set_ylabel('Number of Movies')
-    ax.set_title(title)
-    xTickMarks = [str(i) for i in range(1,6)]
-    ax.set_xticks(ind)
-    xtickNames = ax.set_xticklabels(xTickMarks)
-    plt.setp(xtickNames, fontsize=10)
-    plt.savefig(title)
-    plt.show()
 
 
 def main():
