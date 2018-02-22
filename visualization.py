@@ -76,7 +76,7 @@ def categorize(genre_dict, movieIDs):
         adrenaline_count = sum(get_adrenaline(fields))
         light_count = sum(get_light(fields))
 
-        coordinates.append((serious_count-escapist_count, adrenaline_count-light_count))
+        coordinates.append((adrenaline_count-light_count, serious_count-escapist_count))
 
     return coordinates
 
@@ -110,14 +110,24 @@ def fancy_plot(genre_dict, movieIDs, movieNames, title):
     ax.set_ylim([-lim-0.5,lim+0.5])
 
     # plot movie names
-    for label, xpt, ypt in zip(movieNames, X, Y):
-        ax.text(xpt-0.1, ypt+0.1, label)
+    # for label, xpt, ypt in zip(movieNames, X, Y):
+    #     ax.text(xpt-0.5, ypt-0.3, label)
+    ax.text(X[0]-0.7, Y[0]-0.3, movieNames[0])
+    ax.text(X[1]+0.1, Y[1]+0.2, movieNames[1])
+    ax.text(X[2]-0.5, Y[2]-0.3, movieNames[2])
+    ax.text(X[3]-0.9, Y[3]-0.6, movieNames[3])
+    ax.text(X[4]-0.5, Y[4]-0.3, movieNames[4])
+    ax.text(X[5]-1.4, Y[5]+0.3, movieNames[5])
+    ax.text(X[6]-0.5, Y[6]-0.3, movieNames[6])
+    ax.text(X[7]-0.5, Y[7]-0.4, movieNames[7])
+    ax.text(X[8]-0.5, Y[8]+0.2, movieNames[8])
+    ax.text(X[9]-0.5, Y[9]-0.3, movieNames[9])
 
     # plot classifications
-    ax.text(-0.4, ymax+0.5, 'Serious')
-    ax.text(-0.4, ymin-0.5, 'Escapist')
-    ax.text(xmax-0.6, 0.5, 'Adrenaline-Rush')
-    ax.text(xmin-0.4, 0.5, 'Light-Hearted')
+    ax.text(0.2, ymax-0.1, 'Serious', fontweight='bold')
+    ax.text(0.2, ymin, 'Escapist', fontweight='bold')
+    ax.text(xmax-1.5, 0.3, 'Adrenaline-Rush', fontweight='bold')
+    ax.text(xmin, 0.3, 'Light-Hearted', fontweight='bold')
 
     # removing the default axis on all sides:
     for side in ['bottom','right','top','left']:
@@ -159,6 +169,7 @@ def fancy_plot(genre_dict, movieIDs, movieNames, title):
          head_width=yhw, head_length=yhl, overhang = ohg, 
          length_includes_head= True, clip_on = False) 
 
+    pl.tight_layout()
     pl.savefig(title)
     pl.show()
 
@@ -214,7 +225,7 @@ def main():
         avg_ratings[key] = avg_ratings.get(key, 0) + data_tuple[2]/frequencies[key]
 
     rating_count = get_rating_freq(data, [ID for ID in movie_names]) 
-    bar_plot(rating_count, 'Ratings of All Movies')
+    # bar_plot(rating_count, 'Ratings of All Movies')
     
 
     # 2. Ten most popular movies
@@ -230,7 +241,6 @@ def main():
     # Histogram
     pop_rating_count = get_rating_freq(data, pop_movie_IDs)
     bar_plot(pop_rating_count, 'Ratings of Ten Most Popular Movies')
-
 
     # 3. Top ten best movies
     best_reviewed = dict(Counter(avg_ratings).most_common(10))
