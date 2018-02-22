@@ -92,7 +92,7 @@ def bar_plot(rating_count, title):
 
 def main():
     Y_train = np.loadtxt('./data/train.txt').astype(int)
-    Y_test = np.loadtxt('./data/test.txt')  .astype(int)
+    Y_test = np.loadtxt('./data/test.txt').astype(int)
 
     M = max(max(Y_train[:,0]), max(Y_test[:,0])).astype(int) # users
     N = max(max(Y_train[:,1]), max(Y_test[:,1])).astype(int) # movies
