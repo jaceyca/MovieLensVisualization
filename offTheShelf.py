@@ -24,6 +24,7 @@ knn.fit(Y_train)
 error = 0
 for index, user in enumerate(uid): 
 	prediction = knn.predict(user, mid[index])
+	print(prediction)
 	if float(np.around(prediction.est)) != float(rating[index]):
 		error += 1
 testError = float(error)/len(uid)

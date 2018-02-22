@@ -111,7 +111,7 @@ def main():
         
         for k in Ks:
             print("Training model with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
-            U,V, e_in = train_model(M, N, k, eta, reg, Y_train)
+            U,V, e_in = train_model(M, N, k, eta, reg, Y_train, mode='advanced')
             E_ins_for_lambda.append(e_in)
             eout = get_err(U, V, Y_test)
             E_outs_for_lambda.append(eout)
