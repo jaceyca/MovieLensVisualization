@@ -3,6 +3,13 @@
 
 import numpy as np
 
+
+def grad_A(A, Yij, counter):
+    return A + (Yij-A)/counter
+
+def grad_B(B, Yij, counter):
+    return B + (Yij-B)/counter
+
 def grad_U(Ui, Yij, Vj, reg, eta):
     """
     Takes as input Ui (the ith row of U), a training point Yij, the column
@@ -14,6 +21,18 @@ def grad_U(Ui, Yij, Vj, reg, eta):
     """
     return (1-reg*eta)*Ui + eta * Vj * (Yij - np.dot(Ui,Vj))     
 
+
+def grad_U_advanced(Ui, Yij, Vj, ai, bj, reg, eta):
+    """
+    Takes as input Ui (the ith row of U), a training point Yij, the column
+    vector Vj (jth column of V^T), reg (the regularization parameter lambda),
+    and eta (the learning rate).
+
+    Returns the gradient of the regularized loss function with
+    respect to Ui multiplied by eta.
+    """
+    return (1-reg*eta)*Ui + eta * Vj * (Yij - np.dot(Ui,Vj) + ai + bj)   
+
 def grad_V(Vj, Yij, Ui, reg, eta):
     """
     Takes as input the column vector Vj (jth column of V^T), a training point Yij,
@@ -24,6 +43,17 @@ def grad_V(Vj, Yij, Ui, reg, eta):
     respect to Vj multiplied by eta.
     """
     return (1-reg*eta)*Vj + eta * Ui * (Yij - np.dot(Ui,Vj))
+
+def grad_V_advanced(Vj, Yij, Ui, ai, bj, reg, eta):
+    """
+    Takes as input the column vector Vj (jth column of V^T), a training point Yij,
+    Ui (the ith row of U), reg (the regularization parameter lambda),
+    and eta (the learning rate).
+
+    Returns the gradient of the regularized loss function with
+    respect to Vj multiplied by eta.
+    """
+    return (1-reg*eta)*Vj + eta * Ui * (Yij - np.dot(Ui,Vj) + ai + bj)
 
 def get_err(U, V, Y, reg=0.0):
     """
@@ -50,7 +80,7 @@ def get_err(U, V, Y, reg=0.0):
     # Return the mean of the regularized error
     return err / float(len(Y))
 
-def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
+def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300, mode='basic'):
     """
     Given a training data matrix Y containing rows (i, j, Y_ij)
     where Y_ij is user i's rating on movie j, learns an
@@ -68,6 +98,10 @@ def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
     # Initialize U, V  
     U = np.random.random((M,K)) - 0.5
     V = np.random.random((K,N)) - 0.5
+    aVec = np.random.random(M) - 0.5 # user
+    bVec = np.random.random(N) - 0.5 # movie
+    countA = np.zeros(M)
+    countB = np.zeros(N)
     size = Y.shape[0]
     delta = None
     indices = np.arange(size)    
@@ -78,8 +112,17 @@ def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
         for ind in indices:
             (i,j, Yij) = Y[ind]
             # Update U[i], V[j]
-            U[i-1] = grad_U(U[i-1], Yij, V[:,j-1], reg, eta)
-            V[:,j-1] = grad_V(V[:,j-1], Yij, U[i-1], reg, eta);
+            if mode == 'basic':
+                U[i-1] = grad_U(U[i-1], Yij, V[:,j-1], reg, eta)
+                V[:,j-1] = grad_V(V[:,j-1], Yij, U[i-1], reg, eta);
+            if mode == 'advanced':
+                countA[i-1] += 1
+                countB[j-1] += 1
+                aVec[i-1] = grad_A(aVec[i-1], Yij, countA[i-1])
+                bVec[j-1] = grad_B(bVec[j-1], Yij, countB[j-1])
+                U[i-1] = grad_U_advanced(U[i-1], Yij, V[:,j-1], aVec[i-1], bVec[j-1], reg, eta)
+                V[:,j-1] = grad_V_advanced(V[:,j-1], Yij, U[i-1], aVec[i-1], bVec[j-1], reg, eta)
+
         # At end of epoch, print E_in
         E_in = get_err(U, V, Y, reg)
         print("Epoch %s, E_in (regularized MSE): %s"%(epoch + 1, E_in))
