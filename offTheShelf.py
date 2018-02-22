@@ -34,6 +34,8 @@ test_set = Y_test.build_testset()
 # mid = list(Y_test_str[:, 1])
 # rating = list(Y_test_int[:, 2])
 
+##### Initial testing #####
+
 sim_options = {
     'name': 'cosine',
     'user_based': False
@@ -43,7 +45,7 @@ sim_options = {
 algo1 = knns.KNNBasic(k = 20, sim_options=sim_options)
 
 # Means KNN algorithm
-algo2 = knns.KNNWithMeans(k=20, sim_options=sim_options)
+algo2 = knns.KNNWithMeans(k = 20, sim_options=sim_options)
 
 # ZScore KNN algorithm
 algo3 = knns.KNNWithZScore(k = 20, sim_options=sim_options)
@@ -83,29 +85,44 @@ algo9 = co_clustering.CoClustering()
 algos = [algo1,algo2,algo3,algo4,algo5,algo6,algo7,algo8,algo9]
 
 # Fit and train, compute root mean square error
-# for algo in algos:
-# 	algo.fit(Y_train)
-# 	predictions = algo.test(test_set)
-# 	print(algo)
-# 	accuracy.rmse(predictions) # Then compute RMSE
+for algo in algos:
+	algo.fit(Y_train)
+	predictions = algo.test(test_set)
+	print(algo)
+	accuracy.rmse(predictions) # Then compute RMSE
+###########################
 
 
-# Grid Search
+#### Grid Search Testing ####
 param_grid_KNN = {'n_epochs': [5, 10, 20, 30, 40], 'k':[20, 30, 40, 50, 60, 70, 100],
                             'sim_options': {'name': ['msd', 'cosine'],
                             'user_based': [False]}}
 
 # gridSearch(knns.KNNBasic, param_grid_KNN, train_data)
 # KNNBasic: {'n_epochs': 5, 'k': 40, 'sim_options': {'name': 'msd', 'user_based': False}}
+algo_KB = knns.KNNBasic(k = 40, n_epochs=5, sim_options={'name': 'msd', 'user_based': False})
+algo_KB.fit(Y_train)
+accuracy.rmse(algo_KB.test(test_set))
 # Training RMSE: 0.991622355748
+# Testing RMSE: 0.9659
 
+#### Best testing RMSE ####
 # gridSearch(knns.KNNWithMeans, param_grid_KNN, train_data)
 # KNNWithMeans: {'n_epochs': 5, 'k': 50, 'sim_options': {'name': 'msd', 'user_based': False}}
-# Training RMSE: 0.944528173188
+algo_KM = knns.KNNWithMeans(k = 60, n_epochs=5, sim_options={'name': 'msd', 'user_based': False})
+algo_KM.fit(Y_train)
+accuracy.rmse(algo_KM.test(test_set))
+# Training RMSE: 0.945551636064
+# Testing RMSE: 0.929
 
 # gridSearch(knns.KNNWithZScore, param_grid_KNN, train_data)
 # KNNWithZScore: {'n_epochs': 5, 'k': 50, 'sim_options': {'name': 'msd', 'user_based': False}}
+algo_KZ = knns.KNNWithZScore(k = 50, n_epochs=5, sim_options={'name': 'msd', 'user_based': False})
+algo_KZ.fit(Y_train)
+accuracy.rmse(algo_KZ.test(test_set))
 # Training RMSE: 0.946851952709
+# Testing RMSE: 0.9317
 
+###########################
 
 
