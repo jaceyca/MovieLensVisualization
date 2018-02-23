@@ -240,12 +240,12 @@ def main():
     
 
     # 2. Ten most popular movies
-    most_reviewed = frequencies.most_common(10)
-    pop_movie_IDs = [x[0] for x in most_reviewed]
-    print("POP MOVIE IDS: ", pop_movie_IDs)
-    pop_movie_names = [movie_names[ID] for ID in pop_movie_IDs]
-    pop_movie_genres = [genres[ID] for ID in pop_movie_IDs]
-    print("Most Reviewed Movies: ", pop_movie_names)
+    # most_reviewed = frequencies.most_common(10)
+    # pop_movie_IDs = [x[0] for x in most_reviewed]
+    # print("POP MOVIE IDS: ", pop_movie_IDs)
+    # pop_movie_names = [movie_names[ID] for ID in pop_movie_IDs]
+    # pop_movie_genres = [genres[ID] for ID in pop_movie_IDs]
+    # print("Most Reviewed Movies: ", pop_movie_names)
 
     # Fancy plot
     # fancy_plot(genres, pop_movie_IDs, pop_movie_names, 'Visualization of Ten Most Popular Movies')
@@ -257,8 +257,10 @@ def main():
     # # 3. Top ten best movies
     # best_reviewed = dict(Counter(avg_ratings).most_common(10))
     # best_reviewed_names = [movie_names[ID] for ID in best_reviewed]
+    # print("BEST REVIEWED: ", best_reviewed)
     # best_reviewed_genres = [genres[ID] for ID in best_reviewed]
     # print("Best Movies: ", best_reviewed_names)
+    # print()
 
 
     # best_rating_count = get_rating_freq(data, best_reviewed)
@@ -266,14 +268,19 @@ def main():
 
     # # 4. Three genres of your choice - 2:Action, 7:Documentary, 17:War
     # action_movies = [ID for ID in genres if genres[ID][2] == 1]
+    # print("ACTION: ", action_movies)
     # action_movie_names = [movie_names[ID] for ID in action_movies] 
-
+    # print("Names: ", action_movie_names)
+    # print()
     # # action movie plotting
     # action_rating_count = get_rating_freq(data, action_movies)
     # bar_plot(action_rating_count, 'Ratings of Action Movies')
 
     # documentary_movies = [ID for ID in genres if genres[ID][7] == 1]
     # documentary_movie_names = [movie_names[ID] for ID in documentary_movies] 
+    # print("DOCUMENTARIES: ", documentary_movies)
+    # print("Names: ", documentary_movie_names)
+    # print()
 
     # # plotting documentaries
     # documentary_count = get_rating_freq(data, documentary_movies)
@@ -281,6 +288,9 @@ def main():
 
     # war_movies = [ID for ID in genres if genres[ID][17] == 1]
     # war_movie_names = [movie_names[ID] for ID in war_movies] 
+    # print("WAR: ", war_movies)
+    # print("Names: ", war_movie_names)
+    # print()
 
     # # plotting war movies
     # war_rating_count = get_rating_freq(data, war_movies)
