@@ -72,23 +72,23 @@ def main():
 
     newU, newV = projectUV(U, V)
     preds = np.dot(np.transpose(newU), newV)
-    matIntPreds = np.around(preds).astype(int)
 
     for index, row in enumerate(preds): 
         row[:] = row + aVec[index] + mu
     for index, column in enumerate(np.transpose(preds)):
         column[:] = column + bVec[index]
-    intPreds = list(np.around(np.ndarray.flatten(preds)).astype(int))
+    intPreds = np.around(preds).astype(int)
+    flatPreds = list(np.ndarray.flatten(intPreds))
 
     print('Errors:')
     print(E_ins)
     print(E_outs)
 
-    r1 = intPreds.count(1)
-    r2 = intPreds.count(2)
-    r3 = intPreds.count(3)
-    r4 = intPreds.count(4)
-    r5 = intPreds.count(5)
+    r1 = flatPreds.count(1)
+    r2 = flatPreds.count(2)
+    r3 = flatPreds.count(3)
+    r4 = flatPreds.count(4)
+    r5 = flatPreds.count(5)
     f1 = r1/(r1+r2+r3+r4+r5)
     f2 = r2/(r1+r2+r3+r4+r5)
     f3 = r3/(r1+r2+r3+r4+r5)
@@ -119,16 +119,16 @@ def main():
     pop_movie_names = ['Star Wars (1977)', 'Contact (1997)', 'Fargo (1996)', 'Return of the Jedi (1983)', 
     'Liar Liar (1997)', '"English Patient, The (1996)"', 'Scream (1996)', 'Toy Story (1995)', 
     'Air Force One (1997)', 'Independence Day (ID4) (1996)']
-    # pop_rating_ratings = np.ndarray.flatten(matIntPreds[:, pop_movie_ids])
-    # pop_freqs_count = Counter(pop_rating_ratings)
-    # pop_f1 = pop_freqs_count[1]/float(len(pop_rating_ratings))
-    # pop_f2 = pop_freqs_count[2]/float(len(pop_rating_ratings))
-    # pop_f3 = pop_freqs_count[3]/float(len(pop_rating_ratings))
-    # pop_f4 = pop_freqs_count[4]/float(len(pop_rating_ratings))
-    # pop_f5 = pop_freqs_count[5]/float(len(pop_rating_ratings))
-    # pop_freqs = [pop_f1, pop_f2, pop_f3, pop_f4, pop_f5]
+    pop_rating_ratings = np.ndarray.flatten(intPreds[:, pop_movie_ids])
+    pop_freqs_count = Counter(pop_rating_ratings)
+    pop_f1 = pop_freqs_count[1]/float(len(pop_rating_ratings))
+    pop_f2 = pop_freqs_count[2]/float(len(pop_rating_ratings))
+    pop_f3 = pop_freqs_count[3]/float(len(pop_rating_ratings))
+    pop_f4 = pop_freqs_count[4]/float(len(pop_rating_ratings))
+    pop_f5 = pop_freqs_count[5]/float(len(pop_rating_ratings))
+    pop_freqs = [pop_f1, pop_f2, pop_f3, pop_f4, pop_f5]
 
-    # bar_plot(pop_freqs, "Advanced Predictions of Top Ten Popular Movies")
+    bar_plot(pop_freqs, "Advanced Predictions of Top Ten Popular Movies")
 
 if __name__ == "__main__":
     main()
