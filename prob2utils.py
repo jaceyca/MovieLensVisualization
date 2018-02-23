@@ -193,4 +193,7 @@ def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300, mode='basic'):
     if mode == 'advanced':
         unregMSE = get_err_advanced(U, V, Y, mu, aVec, bVec)
 
-    return (U, V, unregMSE, aVec, bVec, mu)
+    if mode == 'advanced':
+        return (U, V, unregMSE, aVec, bVec, mu)
+    else: 
+        return(U, V, unregMSE)

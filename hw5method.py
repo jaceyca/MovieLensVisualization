@@ -35,13 +35,23 @@ def projectUV(U, V):
 def main():
     Y_train = np.loadtxt('./data/train.txt').astype(int)
     Y_test = np.loadtxt('./data/test.txt').astype(int)
+    data = np.loadtxt('./data/data.txt').astype(int)
+    movie_file = codecs.open('./data/movies.txt', mode='r', encoding='windows-1252')
+    movie_names = {}
+    genres = {}
+    for line in movie_file:
+        movie_info = line.split()
+        movie_names[int(movie_info[0])] = " ".join(movie_info[1:-19])
+        genres[int(movie_info[0])] = list(map(int, movie_info[-19:]))
+
 
     M = max(max(Y_train[:,0]), max(Y_test[:,0])).astype(int) # users
     N = max(max(Y_train[:,1]), max(Y_test[:,1])).astype(int) # movies
     Ks = [20]
 
     # Ein and Eout for different regs have been recorded
-    regs = [10**-1]
+    # 2*10**-1 gives us an eout of 0.5 but it has meaningful graphs?
+    regs = [2*10**-1]
     eta = 0.03 # learning rate
     E_ins = []
     E_outs = []
@@ -66,8 +76,8 @@ def main():
         E_ins.append(E_ins_for_lambda)
         E_outs.append(E_outs_for_lambda)
 
-    # basic gives Ein = 0.322 and Eout = 0.4565
-    # advanced gives Ein = and Eout = FIX ERRORS AND SHIT
+    # basic gives Ein = 0.3002 and Eout = 0.4495
+    # advanced gives Ein = 0.4254 and Eout = 0.5097
 
 
     newU, newV = projectUV(U, V)
@@ -96,40 +106,23 @@ def main():
     f5 = r5/(r1+r2+r3+r4+r5)
 
     rating_freq = [f1, f2, f3, f4, f5]
-    bar_plot(rating_freq, "Advanced Ratings of All Predicted Movies")
+    # bar_plot(rating_freq, "Advanced Ratings of All Predicted Movies")
 
 
     # Plotting for actual things
-    data = np.loadtxt('./data/data.txt').astype(int)
-    movie_file = codecs.open('./data/movies.txt', mode='r', encoding='windows-1252')
-    movie_names = {}
-    genres = {}
-    for line in movie_file:
-        movie_info = line.split()
-        movie_names[int(movie_info[0])] = " ".join(movie_info[1:-19])
-        genres[int(movie_info[0])] = list(map(int, movie_info[-19:]))
 
-    frequencies = Counter(data[:,1]) # how often the movies are reviewed
-    avg_ratings = {}
-    for data_tuple in data:
-        key = data_tuple[1]
-        avg_ratings[key] = avg_ratings.get(key, 0) + data_tuple[2]/frequencies[key]
+    rand_movie_ids = np.random.randint(1, 1682, 10)
+    rand_movie_names = []
+    for movieID in rand_movie_ids:
+        rand_movie_names.append(movie_names[movieID])
+    matrix_factorization_visualization(newV, rand_movie_ids, rand_movie_names, "Advanced Predictions of Random Movies")
 
     pop_movie_ids = [50, 258, 100, 181, 294, 286, 288, 1, 300, 121]
     pop_movie_names = ['Star Wars (1977)', 'Contact (1997)', 'Fargo (1996)', 'Return of the Jedi (1983)', 
     'Liar Liar (1997)', '"English Patient, The (1996)"', 'Scream (1996)', 'Toy Story (1995)', 
     'Air Force One (1997)', 'Independence Day (ID4) (1996)']
-    # pop_rating_ratings = np.ndarray.flatten(intPreds[:, pop_movie_ids])
-    # pop_freqs_count = Counter(pop_rating_ratings)
-    # pop_f1 = pop_freqs_count[1]/float(len(pop_rating_ratings))
-    # pop_f2 = pop_freqs_count[2]/float(len(pop_rating_ratings))
-    # pop_f3 = pop_freqs_count[3]/float(len(pop_rating_ratings))
-    # pop_f4 = pop_freqs_count[4]/float(len(pop_rating_ratings))
-    # pop_f5 = pop_freqs_count[5]/float(len(pop_rating_ratings))
-    # pop_freqs = [pop_f1, pop_f2, pop_f3, pop_f4, pop_f5]
 
-    # bar_plot(pop_freqs, "Advanced Predictions of Top Ten Popular Movies")
-    matrix_factorization_visualization(newV, pop_movie_ids, "Advanced Predictions of Popular Movies")
+    matrix_factorization_visualization(newV, pop_movie_ids, pop_movie_names, "Advanced Predictions of Popular Movies")
 
     best_movie_ids = [1189, 1500, 814, 1536, 1293, 1599, 1653, 1467, 1122, 1201]
     best_movie_names = ['Prefontaine (1997)', 'Santa with Muscles (1996)', '"Great Day in Harlem, A (1994)"', 
@@ -137,7 +130,7 @@ def main():
     'Entertaining Angels: The Dorothy Day Story (1996)', '"Saint of Fort Washington, The (1993)"', 
     'They Made Me a Criminal (1939)', 'Marlene Dietrich: Shadow and Light (1996)']
 
-    matrix_factorization_visualization(newV, best_movie_ids, "Advanced Predictions of Best Movies")
+    matrix_factorization_visualization(newV, best_movie_ids, best_movie_names, "Advanced Predictions of Best Movies")
 
     action_movie_ids = [2, 21, 24, 29, 35, 50, 62, 78, 82, 97, 101, 110, 112, 117, 118, 132, 140, 141, 142, 
     148, 151, 164, 172, 173, 174, 181, 184, 201, 206, 210, 222, 227, 228, 229, 230, 231, 247, 252, 254, 257, 
@@ -147,21 +140,20 @@ def main():
     982, 993, 1013, 1016, 1031, 1033, 1034, 1058, 1060, 1076, 1091, 1105, 1116, 1126, 1133, 1239, 1279, 1293, 
     1314, 1383, 1411, 1450, 1469, 1480, 1503, 1515, 1523, 1531, 1540, 1555, 1608, 1615]
 
-    matrix_factorization_visualization(newV, action_movie_ids, "Advanced Predictions of Action Movies")
+    matrix_factorization_visualization(newV, action_movie_ids, None, "Advanced Predictions of Action Movies")
 
     documentary_movie_ids = [32, 48, 75, 115, 119, 320, 360, 634, 644, 645, 677, 701, 757, 766, 811, 813, 814, 
     847, 850, 857, 884, 954, 973, 1022, 1065, 1084, 1128, 1130, 1141, 1142, 1184, 1201, 1232, 1294, 1307, 1318, 
     1331, 1363, 1366, 1378, 1482, 1497, 1547, 1561, 1562, 1585, 1594, 1629, 1641, 1649]
 
-    matrix_factorization_visualization(newV, documentary_movie_ids, "Advanced Predictions of Documentaries")
+    matrix_factorization_visualization(newV, documentary_movie_ids, None, "Advanced Predictions of Documentaries")
 
     war_movie_ids = [10, 22, 31, 50, 51, 69, 80, 110, 121, 133, 157, 172, 176, 180, 181, 188, 190, 199, 205, 
-    211, 214, 235, 241, 245, 271, 286, 318, 326, 426, 430, 471, 474, 483, 498, 502, 511, 515, 520, 521, 528, 
+    211, 214, 235, 241, 245, 271, 286, 318, 326, 426, 430, 471, 47, 4, 483, 498, 502, 511, 515, 520, 521, 528, 
     549, 593, 601, 631, 641, 647, 651, 687, 690, 719, 744, 803, 879, 891, 935, 944, 971, 1065, 1124, 1152, 1176, 
     1185, 1204, 1357, 1423, 1485, 1501, 1529, 1574, 1632, 1663]
 
-    matrix_factorization_visualization(newV, war_movie_ids, "Advanced Predictions of War Movies")
-    
+    matrix_factorization_visualization(newV, war_movie_ids, None, "Advanced Predictions of War Movies")
 
 if __name__ == "__main__":
     main()

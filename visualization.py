@@ -238,6 +238,10 @@ def main():
     M = max(data[:,0]).astype(int) # users
     N = max(data[:,1]).astype(int) # movies
 
+    print("movie range")
+    print(min(data[:, 1]))
+    print(max(data[:, 1]))
+
     # 1. All movies
     frequencies = Counter(data[:,1]) # how often the movies are reviewed
     avg_ratings = {}
