@@ -216,6 +216,10 @@ def matrix_factorization_visualization(V, movieIDs, movie_names, title):
         for i, txt in enumerate(movie_names):
             ax.annotate(txt, (x_coords[i], y_coords[i]))
 
+    plt.xticks([])
+    plt.yticks([])
+    plt.title(title)
+    plt.tight_layout()
     plt.savefig(title)
     plt.show()
 
@@ -299,6 +303,11 @@ def main():
     matrix_factorization_visualization(V, documentary_movies, None, "2D Visualization of Documentaries")
     matrix_factorization_visualization(V, war_movies, None, "2D Visualization of War Movies")
     matrix_factorization_visualization(V, comedy_movies, None, "2D Visualization of Comedy Movies")
+    
+    interesting = []
+    interesting.extend(comedy_movies)
+    interesting.extend(war_movies)
+    matrix_factorization_visualization(V, interesting, None, "2D Visualization of War vs Comedy Movies")
     print("Done")
 
 if __name__ == "__main__":
