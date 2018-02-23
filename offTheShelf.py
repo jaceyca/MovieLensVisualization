@@ -1,8 +1,7 @@
 import numpy as np
-from surprise import Dataset, evaluate, Reader, prediction_algorithms, accuracy
-from surprise.prediction_algorithms import knns, matrix_factorization, slope_one, co_clustering
+from surprise import Dataset, evaluate, Reader, accuracy
+from surprise.prediction_algorithms import algo_base, predictions, knns, matrix_factorization, slope_one, co_clustering
 from surprise.model_selection import cross_validate, GridSearchCV
-
 
 def gridSearch(algo, param_grid, data):
     '''
@@ -20,13 +19,16 @@ def gridSearch(algo, param_grid, data):
     # combination of parameters that gave the best RMSE score
     print(gs.best_params['rmse'])
 
-reader = Reader(line_format='user item rating', sep='\t')
-train_data = Dataset.load_from_file('./data/train.txt', reader=reader)
-Y_train = train_data.build_full_trainset()
+def loadData():
+    reader = Reader(line_format='user item rating', sep='\t')
+    train_data = Dataset.load_from_file('./data/train.txt', reader=reader)
+    Y_train = train_data.build_full_trainset()
 
-test_data = Dataset.load_from_file('./data/test.txt', reader=reader)
-Y_test = test_data.build_full_trainset()
-test_set = Y_test.build_testset()
+    test_data = Dataset.load_from_file('./data/test.txt', reader=reader)
+    Y_test = test_data.build_full_trainset()
+    test_set = Y_test.build_testset()
+
+    return train_data, Y_train, test_data, Y_test, test_set
 
 # Y_test_str = np.loadtxt('./data/test.txt').astype(str)
 # Y_test_int = np.loadtxt('./data/test.txt').astype(int)
@@ -34,6 +36,45 @@ test_set = Y_test.build_testset()
 # mid = list(Y_test_str[:, 1])
 # rating = list(Y_test_int[:, 2])
 
+'''
+This function performs matrix factorization.
+Input:
+    Y_train: training labels
+    test_set: test set
+Output: 
+    newU: The 2D version of U
+    newV: The 2D version of V
+'''
+def factorSVD(Y_train, test_set):    
+    SVDpp = matrix_factorization.SVDpp(n_factors=20, n_epochs=20)
+    print("Starting to train SVD++")
+    SVDpp.fit(Y_train)
+    # preds = SVDpp.test(test_set)
+    # error = accuracy.rmse(preds)
+    print("Finished training")
+
+    U = np.transpose(SVDpp.pu)    # k x m = 20 x 943
+    V = np.transpose(SVDpp.qi)    # k x n = 20 x 1668
+
+    print("Starting decomposition of matrix V")
+    A, S, B = np.linalg.svd(V) 
+    A = np.array(A)
+    A = A[:, [0, 1]]    # 20 x 2
+    newU = np.dot(np.transpose(A), U)
+    newV = np.dot(np.transpose(A), V)
+    print("Finished factoring SVD")
+    return newU, newV   # newU = 2 x 943, newV = 2 x 1668
+
+def main():
+    train_data, Y_train, test_data, Y_test, test_set = loadData()
+    U, V = factorSVD(Y_train, test_set)
+    return U, V
+
+if __name__ == '__main__':
+    main()
+
+
+'''
 ##### Initial testing #####
 
 sim_options = {
@@ -124,5 +165,5 @@ accuracy.rmse(algo_KZ.test(test_set))
 # Testing RMSE: 0.9317
 
 ###########################
-
+'''
 
