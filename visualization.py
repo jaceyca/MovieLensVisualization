@@ -231,6 +231,7 @@ def main():
     # 2. Ten most popular movies
     most_reviewed = frequencies.most_common(10)
     pop_movie_IDs = [x[0] for x in most_reviewed]
+    print("POP MOVIE IDS: ", pop_movie_IDs)
     pop_movie_names = [movie_names[ID] for ID in pop_movie_IDs]
     pop_movie_genres = [genres[ID] for ID in pop_movie_IDs]
     print("Most Reviewed Movies: ", pop_movie_names)
