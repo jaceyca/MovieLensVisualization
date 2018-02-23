@@ -21,7 +21,7 @@ def gridSearch(algo, param_grid, data):
 
 def loadData():
     reader = Reader(line_format='user item rating', sep='\t')
-    train_data = Dataset.load_from_file('./data/train.txt', reader=reader)
+    train_data = Dataset.load_from_file('./data/traintest.txt', reader=reader)
     Y_train = train_data.build_full_trainset()
 
     test_data = Dataset.load_from_file('./data/test.txt', reader=reader)
@@ -45,29 +45,29 @@ Output:
     newU: The 2D version of U
     newV: The 2D version of V
 '''
-def factorSVD(Y_train, test_set):    
+def factorSVD(Y_train):    
     SVDpp = matrix_factorization.SVDpp(n_factors=20, n_epochs=20)
     print("Starting to train SVD++")
     SVDpp.fit(Y_train)
-    # preds = SVDpp.test(test_set)
-    # error = accuracy.rmse(preds)
     print("Finished training")
 
     U = np.transpose(SVDpp.pu)    # k x m = 20 x 943
-    V = np.transpose(SVDpp.qi)    # k x n = 20 x 1668
-
+    V = np.transpose(SVDpp.qi)    # k x n = 20 x 1682
+    print(U.shape, V.shape)
     print("Starting decomposition of matrix V")
     A, S, B = np.linalg.svd(V) 
-    A = np.array(A)
+    A = np.array(A)     # 20 x 20
     A = A[:, [0, 1]]    # 20 x 2
+    print(A.shape)
     newU = np.dot(np.transpose(A), U)
     newV = np.dot(np.transpose(A), V)
+    print(newU.shape, newV.shape)
     print("Finished factoring SVD")
-    return newU, newV   # newU = 2 x 943, newV = 2 x 1668
+    return newU, newV   # newU = 2 x 943, newV = 2 x 1682
 
 def main():
     train_data, Y_train, test_data, Y_test, test_set = loadData()
-    U, V = factorSVD(Y_train, test_set)
+    U, V = factorSVD(Y_train)
     return U, V
 
 if __name__ == '__main__':

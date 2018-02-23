@@ -173,23 +173,6 @@ def fancy_plot(genre_dict, movieIDs, movieNames, title):
     pl.savefig(title)
     pl.show()
 
-def matrix_factorization_visualization(V, movieIDs, movie_names, title):
-    print("Starting matrix factorization visualization")
-    x_coords = []
-    y_coords = []
-    for m in movieIDs:
-        x_coords.append(V[0][m-1])
-        y_coords.append(V[1][m-1])
-    
-    fig, ax = plt.subplots()
-    ax.scatter(x_coords, y_coords)
-    for i, txt in enumerate(movie_names):
-        ax.annotate(txt, (x_coords[i], y_coords[i]))
-
-    plt.savefig(title)
-    plt.show()
-
-
 def get_rating_freq(data, movieIDs):
     '''
     This function gets relative frequency of each rating given the data 
@@ -218,6 +201,23 @@ def get_rating_freq(data, movieIDs):
     f5 = r5/(r1+r2+r3+r4+r5)
     return [f1, f2, f3, f4, f5]
 
+
+def matrix_factorization_visualization(V, movieIDs, movie_names, title):
+    print("Starting matrix factorization visualization")
+    x_coords = []
+    y_coords = []
+    for m in movieIDs:
+        x_coords.append(V[0][m-1])
+        y_coords.append(V[1][m-1])
+    
+    fig, ax = plt.subplots()
+    ax.scatter(x_coords, y_coords)
+    if movie_names != None:
+        for i, txt in enumerate(movie_names):
+            ax.annotate(txt, (x_coords[i], y_coords[i]))
+
+    plt.savefig(title)
+    plt.show()
 
 def main():
     # Y_train = np.loadtxt('./data/train.txt').astype(int)
@@ -248,7 +248,6 @@ def main():
     # 2. Ten most popular movies
     most_reviewed = frequencies.most_common(10)
     pop_movie_IDs = [x[0] for x in most_reviewed]
-    print("POP MOVIE IDS: ", pop_movie_IDs)
     pop_movie_names = [movie_names[ID] for ID in pop_movie_IDs]
     pop_movie_genres = [genres[ID] for ID in pop_movie_IDs]
     print("Most Reviewed Movies: ", pop_movie_names)
@@ -273,24 +272,24 @@ def main():
     # # 4. Three genres of your choice - 2:Action, 7:Documentary, 17:War
     action_movies = [ID for ID in genres if genres[ID][2] == 1]
     action_movie_names = [movie_names[ID] for ID in action_movies] 
-
     # # action movie plotting
     # action_rating_count = get_rating_freq(data, action_movies)
     # bar_plot(action_rating_count, 'Ratings of Action Movies')
 
     documentary_movies = [ID for ID in genres if genres[ID][7] == 1]
     documentary_movie_names = [movie_names[ID] for ID in documentary_movies] 
-
     # # plotting documentaries
     # documentary_count = get_rating_freq(data, documentary_movies)
     # bar_plot(documentary_count, 'Ratings of Documentaries')
 
     war_movies = [ID for ID in genres if genres[ID][17] == 1]
     war_movie_names = [movie_names[ID] for ID in war_movies] 
-
     # # plotting war movies
     # war_rating_count = get_rating_freq(data, war_movies)
     # bar_plot(war_rating_count, 'Ratings of War Movies')
+
+    comedy_movies = [ID for ID in genres if genres[ID][5] == 1]
+    comedy_movie_names = [movie_names[ID] for ID in comedy_movies]
 
     # Fancy plot for 5.2b
     U, V = offTheShelf.main()
@@ -299,6 +298,7 @@ def main():
     matrix_factorization_visualization(V, action_movies, None, "2D Visualization of Action Movies")
     matrix_factorization_visualization(V, documentary_movies, None, "2D Visualization of Documentaries")
     matrix_factorization_visualization(V, war_movies, None, "2D Visualization of War Movies")
+    matrix_factorization_visualization(V, comedy_movies, None, "2D Visualization of Comedy Movies")
     print("Done")
 
 if __name__ == "__main__":
