@@ -173,13 +173,19 @@ def fancy_plot(genre_dict, movieIDs, movieNames, title):
     pl.savefig(title)
     pl.show()
 
-def matrix_factorization_visualization(V, movieIDs, title):
-    fig = plt.figure()
+def matrix_factorization_visualization(V, movieIDs, movie_names, title):
     print("Starting matrix factorization visualization")
+    x_coords = []
+    y_coords = []
     for m in movieIDs:
-        mx = V[0][m]
-        my = V[1][m]
-        plt.scatter(mx, my)
+        x_coords.append(V[0][m-1])
+        y_coords.append(V[1][m-1])
+    
+    fig, ax = plt.subplots()
+    ax.scatter(x_coords, y_coords)
+    for i, txt in enumerate(movie_names):
+        ax.annotate(txt, (x_coords[i], y_coords[i]))
+
     plt.savefig(title)
     plt.show()
 
@@ -255,32 +261,32 @@ def main():
     # bar_plot(pop_rating_count, 'Ratings of Ten Most Popular Movies')
 
     # # 3. Top ten best movies
-    # best_reviewed = dict(Counter(avg_ratings).most_common(10))
-    # best_reviewed_names = [movie_names[ID] for ID in best_reviewed]
-    # best_reviewed_genres = [genres[ID] for ID in best_reviewed]
-    # print("Best Movies: ", best_reviewed_names)
+    best_reviewed = dict(Counter(avg_ratings).most_common(10))
+    best_reviewed_names = [movie_names[ID] for ID in best_reviewed]
+    best_reviewed_genres = [genres[ID] for ID in best_reviewed]
+    print("Best Movies: ", best_reviewed_names)
 
 
     # best_rating_count = get_rating_freq(data, best_reviewed)
     # bar_plot(best_rating_count, 'Ratings of Ten Best Movies')
 
     # # 4. Three genres of your choice - 2:Action, 7:Documentary, 17:War
-    # action_movies = [ID for ID in genres if genres[ID][2] == 1]
-    # action_movie_names = [movie_names[ID] for ID in action_movies] 
+    action_movies = [ID for ID in genres if genres[ID][2] == 1]
+    action_movie_names = [movie_names[ID] for ID in action_movies] 
 
     # # action movie plotting
     # action_rating_count = get_rating_freq(data, action_movies)
     # bar_plot(action_rating_count, 'Ratings of Action Movies')
 
-    # documentary_movies = [ID for ID in genres if genres[ID][7] == 1]
-    # documentary_movie_names = [movie_names[ID] for ID in documentary_movies] 
+    documentary_movies = [ID for ID in genres if genres[ID][7] == 1]
+    documentary_movie_names = [movie_names[ID] for ID in documentary_movies] 
 
     # # plotting documentaries
     # documentary_count = get_rating_freq(data, documentary_movies)
     # bar_plot(documentary_count, 'Ratings of Documentaries')
 
-    # war_movies = [ID for ID in genres if genres[ID][17] == 1]
-    # war_movie_names = [movie_names[ID] for ID in war_movies] 
+    war_movies = [ID for ID in genres if genres[ID][17] == 1]
+    war_movie_names = [movie_names[ID] for ID in war_movies] 
 
     # # plotting war movies
     # war_rating_count = get_rating_freq(data, war_movies)
@@ -288,11 +294,11 @@ def main():
 
     # Fancy plot for 5.2b
     U, V = offTheShelf.main()
-    matrix_factorization_visualization(V, pop_movie_IDs, "2D Visualization of Ten Most Popular Movies")
-    # matrix_factorization_visualization(V, best_reviewed, "2D Visualization of Ten Best Movies")
-    # matrix_factorization_visualization(V, action_movies, "2D Visualization of Action Movies")
-    # matrix_factorization_visualization(V, documentary_movies, "2D Visualization of Documentaries")
-
+    matrix_factorization_visualization(V, pop_movie_IDs, pop_movie_names, "2D Visualization of Ten Most Popular Movies")
+    matrix_factorization_visualization(V, best_reviewed, best_reviewed_names, "2D Visualization of Ten Best Movies")
+    matrix_factorization_visualization(V, action_movies, None, "2D Visualization of Action Movies")
+    matrix_factorization_visualization(V, documentary_movies, None, "2D Visualization of Documentaries")
+    matrix_factorization_visualization(V, war_movies, None, "2D Visualization of War Movies")
     print("Done")
 
 if __name__ == "__main__":
