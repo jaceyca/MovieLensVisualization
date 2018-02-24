@@ -268,15 +268,15 @@ def main():
     # bar_plot(pop_rating_count, 'Ratings of Ten Most Popular Movies')
 
     # # 3. Top ten best movies
-    # best_reviewed = dict(Counter(avg_ratings).most_common(10))
-    # best_reviewed_names = [movie_names[ID] for ID in best_reviewed]
+    best_reviewed = dict(Counter(avg_ratings).most_common(10))
+    best_reviewed_names = [movie_names[ID] for ID in best_reviewed]
     # print("BEST REVIEWED: ", best_reviewed)
     # best_reviewed_genres = [genres[ID] for ID in best_reviewed]
     # print("Best Movies: ", best_reviewed_names)
     # print()
 
 
-    # best_rating_count = get_rating_freq(data, best_reviewed)
+    best_rating_count = get_rating_freq(data, best_reviewed)
     # bar_plot(best_rating_count, 'Ratings of Ten Best Movies')
 
     # # 4. Three genres of your choice - 2:Action, 7:Documentary, 17:War
@@ -284,21 +284,21 @@ def main():
     action_movie_names = [movie_names[ID] for ID in action_movies] 
 
     # # action movie plotting
-    # action_rating_count = get_rating_freq(data, action_movies)
-    # bar_plot(action_rating_count, 'Ratings of Action Movies')
+    action_rating_count = get_rating_freq(data, action_movies)
+    bar_plot(action_rating_count, 'Ratings of Adventure Movies')
 
     documentary_movies = [ID for ID in genres if genres[ID][7] == 1]
     documentary_movie_names = [movie_names[ID] for ID in documentary_movies] 
 
     # # plotting documentaries
-    # documentary_count = get_rating_freq(data, documentary_movies)
+    documentary_count = get_rating_freq(data, documentary_movies)
     # bar_plot(documentary_count, 'Ratings of Documentaries')
 
     war_movies = [ID for ID in genres if genres[ID][17] == 1]
     war_movie_names = [movie_names[ID] for ID in war_movies] 
 
     # # plotting war movies
-    # war_rating_count = get_rating_freq(data, war_movies)
+    war_rating_count = get_rating_freq(data, war_movies)
     # bar_plot(war_rating_count, 'Ratings of War Movies')
 
     comedy_movies = [ID for ID in genres if genres[ID][5] == 1]
@@ -306,17 +306,23 @@ def main():
 
     # Fancy plot for 5.2b
     U, V = offTheShelf.main()
-    matrix_factorization_visualization(V, pop_movie_IDs, pop_movie_names, "2D Visualization of Ten Most Popular Movies")
-    matrix_factorization_visualization(V, best_reviewed, best_reviewed_names, "2D Visualization of Ten Best Movies")
-    matrix_factorization_visualization(V, action_movies, None, "2D Visualization of Action Movies")
-    matrix_factorization_visualization(V, documentary_movies, None, "2D Visualization of Documentaries")
-    matrix_factorization_visualization(V, war_movies, None, "2D Visualization of War Movies")
-    matrix_factorization_visualization(V, comedy_movies, None, "2D Visualization of Comedy Movies")
+    # matrix_factorization_visualization(V, pop_movie_IDs, pop_movie_names, "2D Visualization of Ten Most Popular Movies")
+    # matrix_factorization_visualization(V, best_reviewed, best_reviewed_names, "2D Visualization of Ten Best Movies")
+    matrix_factorization_visualization(V, action_movies, None, "2D Visualization of Adventure Movies")
+    # matrix_factorization_visualization(V, documentary_movies, None, "2D Visualization of Documentaries")
+    # matrix_factorization_visualization(V, war_movies, None, "2D Visualization of War Movies")
+    # matrix_factorization_visualization(V, comedy_movies, None, "2D Visualization of Comedy Movies")
+
+    rand_movie_ids = np.random.randint(1, 1682, 10)
+    rand_movie_names = []
+    for movieID in rand_movie_ids:
+        rand_movie_names.append(movie_names[movieID])
+    matrix_factorization_visualization(V, rand_movie_ids, rand_movie_names, "2D Visualization of Random Movies")
     
     interesting = []
     interesting.extend(comedy_movies)
     interesting.extend(war_movies)
-    matrix_factorization_visualization(V, interesting, None, "2D Visualization of War vs Comedy Movies")
+    # matrix_factorization_visualization(V, interesting, None, "2D Visualization of War vs Comedy Movies")
     print("Done")
 
 if __name__ == "__main__":
