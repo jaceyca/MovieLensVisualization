@@ -140,7 +140,7 @@ def main():
     982, 993, 1013, 1016, 1031, 1033, 1034, 1058, 1060, 1076, 1091, 1105, 1116, 1126, 1133, 1239, 1279, 1293, 
     1314, 1383, 1411, 1450, 1469, 1480, 1503, 1515, 1523, 1531, 1540, 1555, 1608, 1615]
 
-    matrix_factorization_visualization(newV, action_movie_ids, None, "Advanced Predictions of Action Movies")
+    matrix_factorization_visualization(newV, action_movie_ids, None, "Advanced Predictions of Adventure Movies")
 
     documentary_movie_ids = [32, 48, 75, 115, 119, 320, 360, 634, 644, 645, 677, 701, 757, 766, 811, 813, 814, 
     847, 850, 857, 884, 954, 973, 1022, 1065, 1084, 1128, 1130, 1141, 1142, 1184, 1201, 1232, 1294, 1307, 1318, 
