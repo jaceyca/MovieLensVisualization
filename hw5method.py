@@ -33,7 +33,7 @@ def projectUV(U, V):
 
 
 def main():
-    Y_train = np.loadtxt('./data/train.txt').astype(int)
+    Y_train = np.loadtxt('./data/traintest.txt').astype(int)
     Y_test = np.loadtxt('./data/test.txt').astype(int)
     data = np.loadtxt('./data/data.txt').astype(int)
     movie_file = codecs.open('./data/movies.txt', mode='r', encoding='windows-1252')
@@ -81,6 +81,9 @@ def main():
 
 
     newU, newV = projectUV(U, V)
+    return newU, newV
+
+'''
     preds = np.dot(np.transpose(newU), newV)
 
     for index, row in enumerate(preds): 
@@ -154,7 +157,7 @@ def main():
     1185, 1204, 1357, 1423, 1485, 1501, 1529, 1574, 1632, 1663]
 
     matrix_factorization_visualization(newV, war_movie_ids, None, "Advanced Predictions of War Movies")
-
+'''
 if __name__ == "__main__":
     main()
 

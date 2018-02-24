@@ -21,7 +21,7 @@ def gridSearch(algo, param_grid, data):
 
 def loadData():
     reader = Reader(line_format='user item rating', sep='\t')
-    train_data = Dataset.load_from_file('./data/train.txt', reader=reader)
+    train_data = Dataset.load_from_file('./data/traintest.txt', reader=reader)
     Y_train = train_data.build_full_trainset()
 
     test_data = Dataset.load_from_file('./data/test.txt', reader=reader)
